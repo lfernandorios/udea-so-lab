@@ -18,6 +18,7 @@ int main(int argc, char* argv[])
 	char bufer[LONGITUD_MAXIMA_CADENA];
 	char *linea, *campo, *valor;
 	char *nombre, *estado, *tamano;
+	char voluntarios[20];
 
 	while (fgets(bufer, LONGITUD_MAXIMA_CADENA, fd))
 	{
@@ -34,7 +35,13 @@ int main(int argc, char* argv[])
 			
 			if(strcmp(campo,"Name")==0) printf("Nombre del proceso: %s\n", valor);
 			if(strcmp(campo,"State")==0) printf("Estado: %s\n", valor);
-			if(strcmp(campo,"VmSize")==0) printf("Tamaño total de la imagen de memoria: %s\n", valor);     			  		
+			if(strcmp(campo,"VmSize")==0) printf("Tamano total de la imagen de memoria: %s\n", valor);
+			if(strcmp(campo,"VmExe")==0) printf("Tamano de la memoria en la region TEXT: %s\n", valor);
+			if(strcmp(campo,"VmData ")==0) printf("Tamano de la memoria en la region DATA: %s\n", valor);
+			if(strcmp(campo,"VmStk")==0) printf("Tamano de la memoria en la region STACK: %s\n", valor);
+			if(strcmp(campo,"voluntary_ctxt_switches")==0) strcpy(voluntarios,valor);
+			if(strcmp(campo,"nonvoluntary_ctxt_switches")==0) printf("Numero de cambios de contexto realizados (voluntarios - no voluntarios): %s - %s\n", voluntarios, valor);
+			      			  		
     		}
 		
 	}
