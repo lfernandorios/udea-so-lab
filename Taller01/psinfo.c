@@ -1,86 +1,45 @@
-#include <unistd.h>
 #include <stdio.h>
+#include <string.h>
+
+#define LONGITUD_MAXIMA_CADENA 1000
 
 int main(int argc, char* argv[])
 {
-    if (argc<2)
-        return perror("Falta un argumento"), 1;
+	if (argc<2)
+	return perror("Falta un argumento"), 1;
 
-    char statFileName[128];             /* /proc/PIC/stat - I think 512 bytes is far enough */
-   
-    sprintf(statFileName, "/proc/%s/stat", argv[1]);
-    /* Podíamos comprobar que argv[1] es numérico y que es de poco
-       tamaño, pero para el ejemplo nos vale. */
-    FILE *fd = fopen(statFileName, "r");
-    if (fd == NULL)
-        return perror("No puedo encontrar el proceso especificado"),1;
-    char
-    state,
-      name[32];
-    int
-      pid,
-      ppid,
-      pgrp,
-      session,
-      tty,
-      tpgid,
-      nlwp;
+	char statFileName[128];   
+	sprintf(statFileName, "/proc/%s/status", argv[1]);
+	FILE *fd = fopen(statFileName, "r");
+	if (fd == NULL)
+		return perror("No puedo encontrar el proceso especificado"),1;
+    
 
-    unsigned long
-    flags,
-      min_flt,
-      cmin_flt,
-      maj_flt,
-      cmaj_flt,
-      vsize;
+	char bufer[LONGITUD_MAXIMA_CADENA];
+	char *linea, *campo, *valor;
+	char *nombre, *estado, *tamano;
 
-    unsigned long long
-    utime,
-      stime,
-      cutime,
-      cstime,
-      start_time;
+	while (fgets(bufer, LONGITUD_MAXIMA_CADENA, fd))
+	{
+		linea = strtok(bufer, "\n");
+		//printf("La ln es: %s\n", linea);
+		
+		campo = strtok(linea, ":\t");
+		valor = strtok(NULL, ":\t");
 
-    long
-    priority,
-      nice,
-      alarm,
-      rss;
-   
-    fscanf(fd, "%d %s "
-                 "%c "
-                 "%d %d %d %d %d "
-                 "%lu %lu %lu %lu %lu "
-                 "%Lu %Lu %Lu %Lu "
-                 "%ld %ld "
-                 "%d "
-                 "%ld "
-                 "%Lu "
-                 "%lu "
-                 "%ld",
-                 &pid,
-                 name,
-                 &state,
-                 &ppid, &pgrp, &session, &tty, &tpgid,
-                 &flags, &min_flt, &cmin_flt, &maj_flt, &cmaj_flt,
-                 &utime, &stime, &cutime, &cstime,
-                 &priority, &nice,
-                 &nlwp,
-                 &alarm,
-                 &start_time,
-                 &vsize,
-                 &rss);
-   
-    fclose(fd);
+		if(campo != NULL)
+		{
+			//printf("Campo: %s\n", campo);
+			//printf("Valor: %s\n", valor);
+			
+			if(strcmp(campo,"Name")==0) printf("Nombre del proceso: %s\n", valor);
+			if(strcmp(campo,"State")==0) printf("Estado: %s\n", valor);
+			if(strcmp(campo,"VmSize")==0) printf("Tama�o total de la imagen de memoria: %s\n", valor);     			  		
+    		}
+		
+	}
 
-    printf ("PID: %d\n"
-                    "CMD: %s\n"
-                    "Estado: %c\n"
-                    "PPID: %d\n"
-                    "Tiempo usuario: %Lu\n"
-                    "Tiempo kernel: %Lu\n"
-                    "Nice: %ld\n"
-                    "Threads: %d\n"
-                    "Iniciado en: %Lu\n"
-                    "Tamaño: %lu\n",
-                    pid, name, state, ppid, utime, stime, nice, nlwp, start_time, vsize);
+	fclose(fd);
+
+	return 0;
+}
