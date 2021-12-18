@@ -23,5 +23,5 @@ void imprimir_datos(ps_data *d);
 void imprimir_datos_b(ps_data *d);
 void parametro_especial(int t,int argc, char *argv[],ps_data *datos);
 void imprimir_reporte(ps_data *datos,char *buffer);
-
+void validar_num(char numero[50]);
 #endif
