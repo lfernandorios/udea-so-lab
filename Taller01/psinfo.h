@@ -20,6 +20,8 @@ void leer_archivo(char *pid,ps_data *datos);
 void guardar_variables(char* c, char* v, ps_data *d);
 int comprobar_parametro(char* p);
 void imprimir_datos(ps_data *d);
-
+void imprimir_datos_b(ps_data *d);
+void parametro_especial(int t,int argc, char *argv[],ps_data *datos);
+void imprimir_reporte(ps_data *datos,char *buffer);
 
 #endif
