@@ -10,36 +10,85 @@ int main(int argc, char* argv[])
 {	
 	
 	if (argc<2)
-	return perror("Falta un argumento"), 1;
-	//aqui se llama al metodo de comprobar parametros de entrada
-	//Primero: si argc es igual o mayor a 3 es porque recibio parametros -l o -r entrar a evaluar argv[1] el cual es el primer parametro	
-	ps_data *datos;
+	return perror("Falta al menos un argumento"), 1;
 	
+	ps_data *datos;	
 	datos=(ps_data*)malloc(sizeof(ps_data));
+	if(argc==2){
+		leer_archivo(argv[1],datos);	
+		imprimir_datos(datos);
+	}
 	
 	if (argc>=3){
 		int tipo_param=comprobar_parametro(argv[1]);
-		
-		switch(tipo_param){
+		parametro_especial(tipo_param, argc, argv,datos);
 			
-			//caso 1 si es -l
-			case 1: 
-				//Hacer un for por cada parametro argc-1
-				leer_archivo(argv[2],datos);
-		
-		
-		}	
 	}
-	
-	
-	leer_archivo(argv[1],datos);
-	
-	imprimir_datos(datos);
-	
 	
 	free(datos);
 
 	return 0;
+}
+
+//Funcion para seleccionar el parametro especial
+void parametro_especial(int tp, int argc, char *argv[], ps_data *datos){
+
+	char buffer[LONGITUD_MAXIMA_CADENA];
+	switch(tp){
+			
+			//caso 1 si es -l
+			case 1: 
+				//Hacer un for por cada parametro argc-1
+				printf("---!Informacion Recolectada!---\n");
+				for(int i=1; i<(argc-1);i++){
+					leer_archivo(argv[i+1],datos);
+					imprimir_datos_b(datos);
+					printf("-------------------------------\n");
+				}
+				
+				break;
+			//caso 2 si es -r	
+			case 2: 
+			
+				
+				strcpy(buffer, "psinfo-report-");
+				strcat(buffer, argv[2]);
+				if(argc>3){
+					for(int i=3;i<argc;i++){
+						strcat(buffer, "-");
+						strcat(buffer, argv[i]);
+					}
+				}
+				strcat(buffer, ".info");
+				
+				for(int i=1; i<(argc-1);i++){
+					leer_archivo(argv[i+1],datos);
+					imprimir_reporte(datos,buffer);
+					
+				}
+				printf("Archivo de salida generado: %s\n",buffer);
+				
+				break;
+		
+		}
+	
+}
+
+void imprimir_reporte(ps_data *d,char *b){
+	   	
+	const char* filename = b;
+
+    	FILE* output_file = fopen(filename, "a");
+    	if (!output_file) {
+       	 perror("fopen");
+      		  exit(EXIT_FAILURE);
+   	 }
+   	
+	fprintf(output_file, "-------\nPid: %s\n", d->pid);
+	fprintf(output_file, "Nombre del proceso: %s\n", d->name);  
+    	fclose(output_file);
+    	
+
 }
 
 //Funcion para leer el archivo
@@ -90,6 +139,8 @@ void guardar_variables(char* c, char* v, ps_data *d){
 	else if(strcmp(c,"voluntary_ctxt_switches")==0) {strcpy(d->voluntario,v); }
 	else if(strcmp(c,"nonvoluntary_ctxt_switches")==0) {strcpy(d->noVoluntario,v); }
 	
+	
+	
 }
 
 
@@ -102,7 +153,13 @@ int comprobar_parametro(char* p){
 }
 
 
+void imprimir_datos_b(ps_data *d){
 
+	printf("Pid: %s\n", d->pid);
+	printf("Nombre del proceso: %s\n", d->name);	
+	
+
+}
 
 
 void imprimir_datos(ps_data *d){
