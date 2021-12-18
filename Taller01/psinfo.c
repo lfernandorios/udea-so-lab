@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
 {	
 	
 	if (argc<2)
-	return perror("Falta un argumento"), 1;
+	return perror("Falta al menos un argumento"), 1;
 	
 	ps_data *datos;	
 	datos=(ps_data*)malloc(sizeof(ps_data));
@@ -39,7 +39,7 @@ void parametro_especial(int tp, int argc, char *argv[], ps_data *datos){
 			//caso 1 si es -l
 			case 1: 
 				//Hacer un for por cada parametro argc-1
-				printf("---!Información Recolectada!---\n");
+				printf("---!Informacion Recolectada!---\n");
 				for(int i=1; i<(argc-1);i++){
 					leer_archivo(argv[i+1],datos);
 					imprimir_datos_b(datos);
